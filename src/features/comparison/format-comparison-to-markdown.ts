@@ -47,10 +47,8 @@ export function formatComparisonToMarkdown(
 
   const user1Name = escapeTableCell(getDisplayName(user1));
   const user2Name = escapeTableCell(getDisplayName(user2));
-  const user1Header =
-    winnerUsername === user1.username ? `${user1Name} 🏆 Winner` : user1Name;
-  const user2Header =
-    winnerUsername === user2.username ? `${user2Name} 🏆 Winner` : user2Name;
+  const user1Header = winnerUsername === user1.username ? `${user1Name} 🏆 Winner` : user1Name;
+  const user2Header = winnerUsername === user2.username ? `${user2Name} 🏆 Winner` : user2Name;
 
   return [
     `| Metric | ${user1Header} | ${user2Header} |`,
