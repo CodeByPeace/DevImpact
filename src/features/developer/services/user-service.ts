@@ -1,6 +1,7 @@
 import { getUserData } from "@/lib/github";
 import { calculateUserScore } from "@/features/scoring";
 import type { CalculateUserScoreResult } from "@/features/scoring/services";
+import { scheduleBackground } from "@/lib/background";
 import { persistUserScores } from "./user-persistence";
 import { getCachedProfile, setCachedProfile } from "./profile-cache";
 import type { UserProfileResponse, UserResult } from "../types";
@@ -75,7 +76,9 @@ export async function getUserProfile(
           };
 
           // Warm Redis profile cache
-          void setCachedProfile(normalizedUsername, profile, selectedLanguages);
+          scheduleBackground(() => {
+            void setCachedProfile(normalizedUsername, profile, selectedLanguages);
+          });
 
           return profile;
         }
@@ -131,14 +134,14 @@ export async function getUserProfile(
     location: data.location ?? null,
   };
 
-  // Warm Redis profile cache with the computed profile
-  void setCachedProfile(normalizedUsername, response, selectedLanguages);
-
-  // Persist canonical scores into DB
-  void persistUserScores({
-    data,
-    score,
-    selectedLanguages,
+  // Warm Redis profile cache and persist canonical scores to DB after response
+  scheduleBackground(async () => {
+    void setCachedProfile(normalizedUsername, response, selectedLanguages);
+    await persistUserScores({
+      data,
+      score,
+      selectedLanguages,
+    });
   });
 
   return response;

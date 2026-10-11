@@ -88,7 +88,7 @@ function getPoolConfig(): PoolConfig {
     connectionString,
     max: isServerless ? 2 : 10,
     idleTimeoutMillis: isServerless ? 10_000 : 30_000,
-    connectionTimeoutMillis: 10_000,
+    connectionTimeoutMillis: isServerless ? 20_000 : 10_000,
   };
 }
 
